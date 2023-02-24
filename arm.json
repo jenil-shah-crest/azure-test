@@ -11,13 +11,6 @@
                 "description": "App names only allow alphanumeric characters and hyphens, cannot start or end in a hyphen, and must be greater than 1 and less than 11 characters"
             }
         },
-        "EventhubNamespace": {
-            "type": "string",
-            "metadata": {
-                "description": "Must be created before deploying"
-            },
-            "defaultValue": "<EventhubNamespace>"
-        },
         "EventhubName": {
             "type": "string",
             "metadata": {
@@ -25,12 +18,12 @@
             },
             "defaultValue": "<EventhubName>"
         },
-        "SharedAccessKey": {
+        "EventhubConnectionString": {
             "type": "string",
             "metadata": {
-                "description": "Specify the primary key of eventhub namespace"
+                "description": "Must be created before deploying"
             },
-            "defaultValue": "<SharedAccessKey>"
+            "defaultValue": "<EventhubConnectionString>"
         },
         "ConsumerGroup": {
             "type": "string",
@@ -63,8 +56,7 @@
     },
     "variables": {
         "FunctionName": "[concat(toLower(parameters('FunctionName')), uniqueString(resourceGroup().id))]",
-        "StorageSuffix": "[environment().suffixes.storage]",
-        "Eventhubconnstr": "[concat('Endpoint=sb://',parameters('EventhubNamespace'),'.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=',parameters('SharedAccessKey'))]"
+        "StorageSuffix": "[environment().suffixes.storage]"
     },
     "resources": [
         {
@@ -201,13 +193,11 @@
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.insights/components', variables('FunctionName')), '2015-05-01').InstrumentationKey]",
                         "APPLICATIONINSIGHTS_CONNECTION_STRING": "[reference(resourceId('microsoft.insights/components', variables('FunctionName')), '2015-05-01').ConnectionString]",
                         "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', toLower(variables('FunctionName')),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', toLower(variables('FunctionName'))), '2019-06-01').keys[0].value, ';EndpointSuffix=',toLower(variables('StorageSuffix')))]",
-                        "EventhubName": "[parameters('EventhubName')]",
                         "LogScaleHostURL": "[parameters('LogScaleHostURL')]",
                         "LogScaleIngestToken": "[parameters('LogScaleIngestToken')]",
-                        "EventhubNamespace": "[parameters('EventhubNamespace')]",
-                        "SharedAccessKey": "[parameters('SharedAccessKey')]",
+                        "EventhubName": "[parameters('EventhubName')]",
                         "ConsumerGroup": "[parameters('ConsumerGroup')]",
-                        "Eventhubconnstring": "[variables('Eventhubconnstr')]",
+                        "Eventhubconnstring": "[parameters('EventhubConnectionString')]",
                         "Schedule": "[parameters('FunctionJobSchedule')]",
                         "WEBSITE_RUN_FROM_PACKAGE": "https://github.com/jenil-shah-crest/azure-test/blob/main/updated_consumer_strip.zip?raw=true"
                     }
