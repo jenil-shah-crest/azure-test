@@ -11,55 +11,60 @@
                 "description": "App names only allow alphanumeric characters and hyphens, cannot start or end in a hyphen, and must be greater than 1 and less than 11 characters"
             }
         },
-        "EventhubNamespace":{
+        "EventhubNamespace": {
             "type": "string",
             "metadata": {
                 "description": "Must be created before deploying"
-              },
+            },
             "defaultValue": "<EventhubNamespace>"
         },
         "EventhubName": {
             "type": "string",
             "metadata": {
                 "description": "Must be created before deploying"
-              },
+            },
             "defaultValue": "<EventhubName>"
         },
         "SharedAccessKey": {
             "type": "string",
             "metadata": {
                 "description": "Specify the primary key of eventhub namespace"
-              },
+            },
             "defaultValue": "<SharedAccessKey>"
+        },
+        "ConsumerGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "Must be created before deploying"
+            },
+            "defaultValue": "$Default"
         },
         "LogScaleHostURL": {
             "type": "string",
             "metadata": {
                 "description": "Specify host name of LogScale Instance"
-              },
+            },
             "defaultValue": "https://cloud.community.humio.com"
         },
-        "LogScaleIngestToken":{
+        "LogScaleIngestToken": {
             "type": "string",
             "metadata": {
                 "description": "Specify LogScale parser token"
-              },
+            },
             "defaultValue": "<LogScaleIngestToken>"
         },
-        "FunctionJobSchedule":{
+        "FunctionJobSchedule": {
             "type": "string",
             "metadata": {
                 "description": "Describe the cron expression to run the function app"
             },
             "defaultValue": "<cron_scheduler_expression>"
         }
-        
     },
     "variables": {
         "FunctionName": "[concat(toLower(parameters('FunctionName')), uniqueString(resourceGroup().id))]",
         "StorageSuffix": "[environment().suffixes.storage]",
-	    "Eventhubconnstr": "[concat('Endpoint=sb://',parameters('EventhubNamespace'),'.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=',parameters('SharedAccessKey'))]",
-        "LogScaleIngestURL": "[concat(parameters('LogScaleHostURL'),'/api/v1/ingest/hec')]"
+        "Eventhubconnstr": "[concat('Endpoint=sb://',parameters('EventhubNamespace'),'.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=',parameters('SharedAccessKey'))]"
     },
     "resources": [
         {
@@ -148,7 +153,6 @@
             "apiVersion": "2022-03-01",
             "name": "[variables('FunctionName')]",
             "location": "[resourceGroup().location]",
-            
             "kind": "functionapp,linux",
             "identity": {
                 "type": "SystemAssigned"
@@ -182,7 +186,6 @@
                         "hostType": "Repository"
                     }
                 ]
-
             },
             "resources": [
                 {
@@ -199,13 +202,14 @@
                         "APPLICATIONINSIGHTS_CONNECTION_STRING": "[reference(resourceId('microsoft.insights/components', variables('FunctionName')), '2015-05-01').ConnectionString]",
                         "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', toLower(variables('FunctionName')),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', toLower(variables('FunctionName'))), '2019-06-01').keys[0].value, ';EndpointSuffix=',toLower(variables('StorageSuffix')))]",
                         "EventhubName": "[parameters('EventhubName')]",
-                        "LogScaleIngestURL": "[variables('LogScaleIngestURL')]",
+                        "LogScaleHostURL": "[parameters('LogScaleHostURL')]",
                         "LogScaleIngestToken": "[parameters('LogScaleIngestToken')]",
                         "EventhubNamespace": "[parameters('EventhubNamespace')]",
                         "SharedAccessKey": "[parameters('SharedAccessKey')]",
+                        "ConsumerGroup": "[parameters('ConsumerGroup')]",
                         "Eventhubconnstring": "[variables('Eventhubconnstr')]",
                         "Schedule": "[parameters('FunctionJobSchedule')]",
-                        "WEBSITE_RUN_FROM_PACKAGE": "https://github.com/jenil-shah-crest/azure-test/blob/main/logscale_azure_function.zip?raw=true"
+                        "WEBSITE_RUN_FROM_PACKAGE": "https://github.com/jenil-shah-crest/azure-test/blob/main/updated_consumer_strip.zip?raw=true"
                     }
                 }
             ]

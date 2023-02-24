@@ -151,7 +151,7 @@ def ingest_to_logscale(records):
     try:
         logscale_token = os.environ.get("LogScaleIngestToken")
         response = requests.post(
-            url=os.environ.get("LogScaleIngestURL"),
+            url=os.environ.get("LogScaleHostURL").rstrip('/')+"/api/v1/ingest/hec",
             headers={
                 "Authorization": f"Bearer {logscale_token}",
                 "Content-Type": "application/json",
@@ -197,7 +197,7 @@ class Eventhub:
         try:
             client = EventHubConsumerClient.from_connection_string(
                 conn_str=self.event_hub_connec_str,
-                consumer_group="$Default",
+                consumer_group=os.environ.get('ConsumerGroup'),
                 eventhub_name=self.event_hub_name,
             )
         except Exception as exception:
@@ -348,7 +348,7 @@ class Eventhub:
         try:
             client = sync_client.from_connection_string(
                 conn_str=self.event_hub_connec_str,
-                consumer_group="$Default",
+                consumer_group=os.environ.get('ConsumerGroup'),
                 eventhub_name=self.event_hub_name,
             )
             for partiton_id in client.get_partition_ids():
