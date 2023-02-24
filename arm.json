@@ -8,27 +8,27 @@
             "minLength": 1,
             "maxLength": 11,
             "metadata": {
-                "description": "App names only allow alphanumeric characters and hyphens, cannot start or end in a hyphen, and must be greater than 1 and less than 11 characters"
+                "description": "App name must be unique and only allow alphanumeric characters and hyphens, cannot start or end in a hyphen, and must be greater than 1 and less than 11 characters"
             }
         },
         "EventhubName": {
             "type": "string",
             "metadata": {
-                "description": "Must be created before deploying"
+                "description": "Name of Eventhub created for LogScale"
             },
             "defaultValue": "<EventhubName>"
         },
         "EventhubConnectionString": {
             "type": "string",
             "metadata": {
-                "description": "Must be created before deploying"
+                "description": "Connection String of Eventhub created for LogScale"
             },
             "defaultValue": "<EventhubConnectionString>"
         },
         "ConsumerGroup": {
             "type": "string",
             "metadata": {
-                "description": "Must be created before deploying"
+                "description": "Name of custom or default Consumer group  of Eventhub created for LogScale"
             },
             "defaultValue": "$Default"
         },
@@ -51,7 +51,7 @@
             "metadata": {
                 "description": "Describe the cron expression to run the function app"
             },
-            "defaultValue": "<cron_scheduler_expression>"
+            "defaultValue": "0 */5 * * * *"
         }
     },
     "variables": {
@@ -199,7 +199,7 @@
                         "ConsumerGroup": "[parameters('ConsumerGroup')]",
                         "Eventhubconnstring": "[parameters('EventhubConnectionString')]",
                         "Schedule": "[parameters('FunctionJobSchedule')]",
-                        "WEBSITE_RUN_FROM_PACKAGE": "https://github.com/jenil-shah-crest/azure-test/blob/main/updated_consumer_strip.zip?raw=true"
+                        "WEBSITE_RUN_FROM_PACKAGE": "https://github.com/jenil-shah-crest/azure-test/blob/main/logscale_azure_function.zip?raw=true"
                     }
                 }
             ]
